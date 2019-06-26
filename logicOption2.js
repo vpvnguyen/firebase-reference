@@ -21,6 +21,11 @@
   var highPrice = 0;
   var highBidder = "No one :-(";
     
+  function getTimeStamp() {
+    var timeInMs = Date.now();
+    var date = new Date(timeInMs);
+    return date = JSON.stringify(date);
+  }
   // At the initial load and subsequent value changes, get a snapshot of the stored data.
   // This function allows you to update your page in real-time when the firebase database changes.
   database.ref('highest-bidder').on("value", function(snapshot) {
@@ -51,20 +56,21 @@
     // Get the input values
     var bidderName = $("#bidder-name").val().trim();
     var bidderPrice = parseInt($("#bidder-price").val().trim());
-    var timeStamp = Date.now();
-    var date = new Date(timeStamp);
+    var date = getTimeStamp();
   
     // Log the Bidder and Price (Even if not the highest)
-    console.log(`bidderName: ${bidderName}`);
+    console.log(`=bidderName: ${bidderName}`);
     console.log(`bidderPrice: ${bidderPrice}`);
     console.log(`timeStamp: ${date}`);
+    console.log(`timeStamp: ${typeof date}`);
+
   
     // save to all-bidders
     database.ref('all-bidders').set({
         bidderName: bidderName,
         bidderPrice: bidderPrice,
         date: date
-      });
+    });
 
     if (bidderPrice > highPrice) {
   
@@ -75,7 +81,8 @@
       // the UI.
       database.ref('highest-bidder').set({
         highBidder: bidderName,
-        highPrice: bidderPrice
+        highPrice: bidderPrice,
+        date: date
       });
 
       // Log the new High Price
@@ -92,7 +99,7 @@
   $('#clear').on('click', function() {
       $('#bidder-name').text('');
       $('#bidder-price').text('');
-    database.ref().set({
-        // clear out database
-      });
+    database.ref('highest-bidder').set({
+        // clear out highest bidder
+    });
   });
